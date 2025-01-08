@@ -116,6 +116,27 @@ process variant_calling {
     """
 }
 
+// process 7:variant annotation
+process variant_annotation {
+    container 'Dockerfile'
+
+    input:
+    path vcf_file
+    path reference
+    path output_dir
+
+    output:
+    path("${output_dir}/annotated_variants.vcf") into annotated_variants
+
+    script:
+    """
+    mkdir -p ${output_dir}/annotated_variants/
+
+    # Annotate the variants using snpEff
+    snpEff -v -c /path/to/snpEff.config -genome ${reference} ${vcf_file} > ${output_dir}/annotated_variants/annotated_variants.vcf
+    """
+}
+
 // Workflow
 workflow {
     // Input parameters
@@ -133,7 +154,9 @@ workflow {
     aligned = align_reads(trimmed.out, indexed.out, params.outputDir)
     deduped = deduplicate(aligned.out, params.outputDir)
     variant_calling(deduped.out, params.reference, params.outputDir)
+    annotated_variants = variant_annotation(variant_calling, params.reference, params.outputDir)
 }
+
 
 // in terminal
 // making changes in the .config file for making it run faster
