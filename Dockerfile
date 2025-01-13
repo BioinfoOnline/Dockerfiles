@@ -69,6 +69,11 @@ RUN wget -O gatk.zip https://github.com/broadinstitute/gatk/releases/download/4.
     ln -s /opt/gatk/gatk /usr/local/bin/gatk && \
     rm gatk.zip
 
+RUN wget https://sourceforge.net/projects/varscan/files/latest/download -O /usr/local/bin/varscan.jar
+
+RUN echo 'alias varscan="java -jar /usr/local/bin/varscan.jar"' >> ~/.bashrc
+ENTRYPOINT ["java", "-jar", "/usr/local/bin/varscan.jar"]
+
 #snpEff
 RUN wget https://snpeff.blob.core.windows.net/versions/snpEff_latest_core.zip -O snpEff.zip && \
     unzip snpEff.zip -d /opt/ && rm snpEff.zip && \
